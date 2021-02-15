@@ -1,11 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
+using Character.UI;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+namespace Character
 {
-    public bool IsFiring;
-    public bool IsReloading;
-    public bool IsJumping;
-    public bool IsRunning;
+    public class PlayerController : MonoBehaviour
+    {
+        public CrossHairScript CrossHair => CrossHairComponent;
+        [SerializeField] private CrossHairScript CrossHairComponent;
+        
+        public bool IsFiring;
+        public bool IsReloading;
+        public bool IsJumping;
+        public bool IsRunning;
+
+    }
 }
