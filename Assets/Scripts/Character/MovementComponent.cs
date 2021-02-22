@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 namespace Character
@@ -10,10 +11,15 @@ namespace Character
         [SerializeField] private float RunSpeed;
         [SerializeField] private float JumpForce;
 
+        [SerializeField] private LayerMask JumpLayerMask;
+        [SerializeField] private float JumpThreshold = 0.1f;
+        [SerializeField] private float JumpLandingCheckDelay = 0.1f;
+
         //Components
         private PlayerController PlayerController;
         private Animator PlayerAnimator;
         private Rigidbody PlayerRigidbody;
+        private NavMeshAgent PlayerNavMeshAgent;
 
         //References
         private Transform PlayerTransform;
@@ -33,6 +39,7 @@ namespace Character
             PlayerController = GetComponent<PlayerController>();
             PlayerAnimator = GetComponent<Animator>();
             PlayerRigidbody = GetComponent<Rigidbody>();
+            PlayerNavMeshAgent = GetComponent<NavMeshAgent>();
         }
 
 
@@ -43,8 +50,6 @@ namespace Character
         public void OnMovement(InputValue value)
         {
             InputVector = value.Get<Vector2>();
-
-            Debug.Log(InputVector);
             
             PlayerAnimator.SetFloat(MovementXHash, InputVector.x);
             PlayerAnimator.SetFloat(MovementYHash, InputVector.y);
@@ -67,10 +72,37 @@ namespace Character
         /// <param name="value"></param>
         public void OnJump(InputValue value)
         {
+
+            if (PlayerController.IsJumping) return;
+
+            PlayerNavMeshAgent.isStopped = true;
+            PlayerNavMeshAgent.enabled = false;
+
+
             PlayerController.IsJumping = value.isPressed;
             PlayerAnimator.SetBool(IsJumpingHash, value.isPressed);
-            
             PlayerRigidbody.AddForce((PlayerTransform.up + MoveDirection) * JumpForce, ForceMode.Impulse);
+
+            InvokeRepeating(nameof(LandingCheck), JumpLandingCheckDelay, 0.1f);
+        }
+
+        private void LandingCheck()
+        {
+            if (!Physics.Raycast(transform.position, transform.up, out RaycastHit hit, 100f, JumpLayerMask)) return;
+
+            Debug.Log(hit.distance);
+
+            if (!(hit.distance < JumpThreshold) || !PlayerController.IsJumping) return;
+
+            PlayerNavMeshAgent.enabled = true;
+            PlayerNavMeshAgent.isStopped = false;
+            
+            PlayerController.IsJumping = false;
+            PlayerAnimator.SetBool(IsJumpingHash, false);
+            
+            CancelInvoke(nameof(LandingCheck));
+            
+           
         }
 
 
@@ -86,20 +118,8 @@ namespace Character
 
             Vector3 movementDirection = MoveDirection * (currentSpeed * Time.deltaTime);
 
-            PlayerTransform.position += movementDirection;
-        }
-        
-        
-    /// <summary>
-    /// Handles ground check when the player is jumping.
-    /// </summary>
-    /// <param name="other"></param>
-        private void OnCollisionEnter(Collision other)
-        {
-            if (!other.gameObject.CompareTag("Ground") && !PlayerController.IsJumping) return;
-
-            PlayerController.IsJumping = false;
-            PlayerAnimator.SetBool(IsJumpingHash, false);
+            //PlayerTransform.position += movementDirection;
+            PlayerNavMeshAgent.Move(movementDirection);        
         }
     }
 }
