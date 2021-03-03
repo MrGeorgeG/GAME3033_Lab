@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 namespace Character
@@ -11,22 +10,17 @@ namespace Character
         [SerializeField] private float RunSpeed;
         [SerializeField] private float JumpForce;
 
-        [SerializeField] private LayerMask JumpLayerMask;
-        [SerializeField] private float JumpThreshold = 0.1f;
-        [SerializeField] private float JumpLandingCheckDelay = 0.1f;
-
         //Components
         private PlayerController PlayerController;
         private Animator PlayerAnimator;
         private Rigidbody PlayerRigidbody;
-        private NavMeshAgent PlayerNavMeshAgent;
 
         //References
         private Transform PlayerTransform;
 
         private Vector2 InputVector = Vector2.zero;
         private Vector3 MoveDirection = Vector3.zero;
-        
+
         //Animator Hashes
         private readonly int MovementXHash = Animator.StringToHash("MovementX");
         private readonly int MovementYHash = Animator.StringToHash("MovementY");
@@ -39,7 +33,6 @@ namespace Character
             PlayerController = GetComponent<PlayerController>();
             PlayerAnimator = GetComponent<Animator>();
             PlayerRigidbody = GetComponent<Rigidbody>();
-            PlayerNavMeshAgent = GetComponent<NavMeshAgent>();
         }
 
 
@@ -50,11 +43,13 @@ namespace Character
         public void OnMovement(InputValue value)
         {
             InputVector = value.Get<Vector2>();
-            
+
+            Debug.Log(InputVector);
+
             PlayerAnimator.SetFloat(MovementXHash, InputVector.x);
             PlayerAnimator.SetFloat(MovementYHash, InputVector.y);
         }
-        
+
         /// <summary>
         /// Get's notified when the player starts and ends running, Called by the PlayerInput component
         /// </summary>
@@ -65,44 +60,17 @@ namespace Character
             PlayerController.IsRunning = value.isPressed;
             PlayerAnimator.SetBool(IsRunningHash, value.isPressed);
         }
-        
+
         /// <summary>
         /// Get's notified when the player presses the jump key, Called by the PlayerInput component
         /// </summary>
         /// <param name="value"></param>
         public void OnJump(InputValue value)
         {
-
-            if (PlayerController.IsJumping) return;
-
-            PlayerNavMeshAgent.isStopped = true;
-            PlayerNavMeshAgent.enabled = false;
-
-
             PlayerController.IsJumping = value.isPressed;
             PlayerAnimator.SetBool(IsJumpingHash, value.isPressed);
+
             PlayerRigidbody.AddForce((PlayerTransform.up + MoveDirection) * JumpForce, ForceMode.Impulse);
-
-            InvokeRepeating(nameof(LandingCheck), JumpLandingCheckDelay, 0.1f);
-        }
-
-        private void LandingCheck()
-        {
-            if (!Physics.Raycast(transform.position, transform.up, out RaycastHit hit, 100f, JumpLayerMask)) return;
-
-            Debug.Log(hit.distance);
-
-            if (!(hit.distance < JumpThreshold) || !PlayerController.IsJumping) return;
-
-            PlayerNavMeshAgent.enabled = true;
-            PlayerNavMeshAgent.isStopped = false;
-            
-            PlayerController.IsJumping = false;
-            PlayerAnimator.SetBool(IsJumpingHash, false);
-            
-            CancelInvoke(nameof(LandingCheck));
-            
-           
         }
 
 
@@ -111,15 +79,27 @@ namespace Character
             if (PlayerController.IsJumping) return;
 
             if (!(InputVector.magnitude > 0)) MoveDirection = Vector3.zero;
-            
+
             MoveDirection = PlayerTransform.forward * InputVector.y + PlayerTransform.right * InputVector.x;
 
             float currentSpeed = PlayerController.IsRunning ? RunSpeed : WalkSpeed;
 
             Vector3 movementDirection = MoveDirection * (currentSpeed * Time.deltaTime);
 
-            //PlayerTransform.position += movementDirection;
-            PlayerNavMeshAgent.Move(movementDirection);        
+            PlayerTransform.position += movementDirection;
+        }
+
+
+        /// <summary>
+        /// Handles ground check when the player is jumping.
+        /// </summary>
+        /// <param name="other"></param>
+        private void OnCollisionEnter(Collision other)
+        {
+            if (!other.gameObject.CompareTag("Ground") && !PlayerController.IsJumping) return;
+
+            PlayerController.IsJumping = false;
+            PlayerAnimator.SetBool(IsJumpingHash, false);
         }
     }
 }
