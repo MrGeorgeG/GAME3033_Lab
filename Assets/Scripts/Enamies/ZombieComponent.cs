@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Win32.SafeHandles;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(StateMachine))]
 public class ZombieComponent : MonoBehaviour
 {
+    public float ZombieDamage => Damage;
+
+    [SerializeField] private float Damage;
     public NavMeshAgent ZombieNavMesh { get; private set; }
     public Animator ZombieAnimator { get; private set; }
 
@@ -48,7 +52,7 @@ public class ZombieComponent : MonoBehaviour
         ZombieDeadState deadState = new ZombieDeadState(this, StateMachine);
         StateMachine.AddState(ZombieStateType.Dead, deadState);
 
-        StateMachine.Initialize(ZombieStateType.Dead);
+        StateMachine.Initialize(ZombieStateType.Follow);
 
     }
 }

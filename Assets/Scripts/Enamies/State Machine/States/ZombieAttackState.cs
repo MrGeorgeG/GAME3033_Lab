@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Systems.Health_System;
 using UnityEngine;
 
 public class ZombieAttackState : ZombieStates
 {
     private GameObject FollowTarget;
-    private float AttackRange = 1.0f;
+    private IDamagable DamagableObject;
+
+    private float AttackRange = 1.5f;
 
     private static readonly int MovementZHash = Animator.StringToHash("MavementZ");
     private static readonly int IsAttackingHash = Animator.StringToHash("IsAttacking");
@@ -22,15 +25,16 @@ public class ZombieAttackState : ZombieStates
         OwerZombeie.ZombieNavMesh.isStopped = true;
         OwerZombeie.ZombieNavMesh.ResetPath();
         OwerZombeie.ZombieAnimator.SetFloat(MovementZHash, 0.0f);
-        OwerZombeie.ZombieAnimator.SetBool(IsAttackingHash, true); 
+        OwerZombeie.ZombieAnimator.SetBool(IsAttackingHash, true);
 
+        DamagableObject = FollowTarget.GetComponent<IDamagable>();
     }
 
     public override void IntervalUpate()
     {
         base.IntervalUpate();
 
-        //TODO: Add Damage to Object.
+        DamagableObject?.TakeDamage(OwerZombeie.ZombieDamage);
     }
 
     // Update is called once per frame
