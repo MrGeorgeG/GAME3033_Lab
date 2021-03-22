@@ -14,7 +14,7 @@ public class PlayerEvents
     {
         OnWeaponEquipped?.Invoke(weaponComponent);
     }
-
+    
     public delegate void PlayerHealthSet(HealthComponent healthComponent);
 
     public static event PlayerHealthSet OnPlayerHealthSet;
@@ -23,4 +23,5 @@ public class PlayerEvents
     {
         OnPlayerHealthSet?.Invoke(healthComponent);
     }
+   
 }

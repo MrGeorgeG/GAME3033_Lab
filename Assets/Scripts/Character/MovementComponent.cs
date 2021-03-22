@@ -25,7 +25,7 @@ namespace Character
 
         private Vector2 InputVector = Vector2.zero;
         private Vector3 MoveDirection = Vector3.zero;
-
+        
         //Animator Hashes
         private readonly int MovementXHash = Animator.StringToHash("MovementX");
         private readonly int MovementYHash = Animator.StringToHash("MovementY");
@@ -49,11 +49,11 @@ namespace Character
         public void OnMovement(InputValue value)
         {
             InputVector = value.Get<Vector2>();
-
+            
             PlayerAnimator.SetFloat(MovementXHash, InputVector.x);
             PlayerAnimator.SetFloat(MovementYHash, InputVector.y);
         }
-
+        
         /// <summary>
         /// Get's notified when the player starts and ends running, Called by the PlayerInput component
         /// </summary>
@@ -64,7 +64,7 @@ namespace Character
             PlayerController.IsRunning = value.isPressed;
             PlayerAnimator.SetBool(IsRunningHash, value.isPressed);
         }
-
+        
         /// <summary>
         /// Get's notified when the player presses the jump key, Called by the PlayerInput component
         /// </summary>
@@ -72,7 +72,7 @@ namespace Character
         public void OnJump(InputValue value)
         {
             if (PlayerController.IsJumping) return;
-
+            
             PlayerController.IsJumping = value.isPressed;
             PlayerAnimator.SetBool(IsJumpingHash, value.isPressed);
             PlayerRigidbody.AddForce((PlayerTransform.up + MoveDirection) * JumpForce, ForceMode.Impulse);
@@ -98,7 +98,7 @@ namespace Character
         private void OnCollisionEnter(Collision other)
         {
             if (!other.collider.CompareTag("Ground") || !PlayerController.IsJumping) return;
-
+            
             PlayerController.IsJumping = false;
             PlayerAnimator.SetBool(IsJumpingHash, false);
         }

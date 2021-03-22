@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Systems.Health_System;
@@ -6,15 +7,15 @@ using UnityEngine;
 [RequireComponent(typeof(ZombieComponent))]
 public class ZombieHealthComponent : HealthComponent
 {
-    private StateMachine ZombeieStateMachine;
+    private StateMachine ZombieStateMachine;
     // Start is called before the first frame update
     void Awake()
     {
-        ZombeieStateMachine = GetComponent<StateMachine>();
+        ZombieStateMachine = GetComponent<StateMachine>();
     }
 
     public override void Destroy()
     {
-        ZombeieStateMachine.ChanceState(ZombieStateType.Dead);
+        ZombieStateMachine.ChanceState(ZombieStateType.Dead);
     }
 }

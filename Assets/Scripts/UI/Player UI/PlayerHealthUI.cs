@@ -7,7 +7,7 @@ using UnityEngine;
 public class PlayerHealthUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text HealthText;
-
+    
     private HealthComponent HealthComponent;
     // Start is called before the first frame update
     private void Awake()
@@ -15,9 +15,9 @@ public class PlayerHealthUI : MonoBehaviour
         PlayerEvents.OnPlayerHealthSet += OnPlayerHealthSet;
     }
 
-    private void OnPlayerHealthSet(HealthComponent healthComponent)
+    private void OnPlayerHealthSet(HealthComponent healthcomponent)
     {
-        HealthComponent = healthComponent;
+        HealthComponent = healthcomponent;
     }
 
     // Update is called once per frame

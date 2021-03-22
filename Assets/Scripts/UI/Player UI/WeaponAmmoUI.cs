@@ -1,16 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Weapons;
-using TMPro;
-using System;
 
 public class WeaponAmmoUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text WeaponNameText;
     [SerializeField] private TMP_Text CurrentBulletText;
     [SerializeField] private TMP_Text TotalBulletText;
-
+    
     private WeaponComponent WeaponComponent;
 
     private void OnEnable()
@@ -18,9 +18,9 @@ public class WeaponAmmoUI : MonoBehaviour
         PlayerEvents.OnWeaponEquipped += OnWeaponEquipped;
     }
 
-    private void OnWeaponEquipped(WeaponComponent weaponComponent)
+    private void OnWeaponEquipped(WeaponComponent weaponcomponent)
     {
-        WeaponComponent = weaponComponent;
+        WeaponComponent = weaponcomponent;
     }
 
     private void OnDisable()

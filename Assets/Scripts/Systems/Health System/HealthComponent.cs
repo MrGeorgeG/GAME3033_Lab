@@ -9,7 +9,6 @@ namespace Systems.Health_System
 
         private float CurrentHealth;
         [SerializeField] private float TotalHealth;
-
         // Start is called before the first frame update
         protected virtual void Start()
         {
@@ -24,10 +23,10 @@ namespace Systems.Health_System
                 Destroy();
             }
         }
+
         public virtual void Destroy()
         {
             Destroy(gameObject);
         }
     }
-
 }

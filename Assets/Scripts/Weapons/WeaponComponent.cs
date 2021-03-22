@@ -101,7 +101,7 @@ namespace Weapons
         protected virtual void ReloadWeapon()
         {
             if (FiringEffect) Destroy(FiringEffect.gameObject);
-          
+            
             int bulletsToReload = WeaponStats.ClipSize - WeaponStats.BulletsAvailable;
             if (bulletsToReload < 0)
             {
