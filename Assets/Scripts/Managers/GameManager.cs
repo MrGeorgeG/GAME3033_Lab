@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    
     public static GameManager Instance { get; private set; }
+
+    public string GameSaveName { get; private set; } = "";
 
     public bool CursorActive { get; private set; } = true;
 
-    public string SelectedSaveName { set; get; }
     
     private void Awake()
     {
@@ -39,6 +39,13 @@ public class GameManager : MonoBehaviour
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+    }
+
+    public void SetActiveSave(string saveName)
+    {
+        if (string.IsNullOrEmpty(saveName)) return;
+        GameSaveName = saveName;
+
     }
 
     private void OnEnable()

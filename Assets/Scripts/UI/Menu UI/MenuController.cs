@@ -3,90 +3,91 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuController : MonoBehaviour
+namespace UI.Menus
 {
-    [SerializeField] private string StartingMenu = "Main Menu";
-    [SerializeField] private string RootMenu = "Main Menu";
-    
-    private MenuWidget ActiveMenu;
-    [SerializeField]
-    private Dictionary<string, MenuWidget> Menus = new Dictionary<string, MenuWidget>();
+    public class MenuController : MonoBehaviour
+    {
+        [SerializeField] private string StartingMenu = "Main Menu";
 
-    private void Start()
-    {
-        DisableAllMenus();
-        EnableMenu(StartingMenu);
-    }
-    
-    public void AddMenu(string menuName, MenuWidget menuWidget)
-    {
-        if (Menus.ContainsKey(menuName))
+        [SerializeField] private string RootMenu = "Main Menu";
+
+        private MenuWidget ActiveWidget;
+
+        private Dictionary<string, MenuWidget> Menus = new Dictionary<string, MenuWidget>();
+        // Start is called before the first frame update
+        void Start()
         {
-            Debug.LogError("Menu already exists in dictionary");
-            return;
+            DisableAllMenus();
+            EnableMenu(StartingMenu);
         }
-        
-        if(menuWidget == null) return;
-        Menus.Add(menuName, menuWidget);
-    }
 
-    public void EnableMenu(string menuName)
-    {
-        if (Menus.ContainsKey(menuName))
+        internal void AddMenu(string menuName, MenuWidget menuWidget)
         {
-            DisableActiveMenu();
+            if (String.IsNullOrEmpty(menuName)) return;
 
-            ActiveMenu = Menus[menuName];
-            ActiveMenu.gameObject.SetActive(true);
+            if (Menus.ContainsKey(menuName))
+            {
+                Debug.LogError("Menu already exists in dictionary!");
+                return;
+
+            }
+
+            if (menuWidget == null) return;
+            Menus.Add(menuName, menuWidget);
+
         }
-        else
+
+        public void EnableMenu(string menuName)
         {
-            Debug.LogError("Menu not available in Dictionary.");
+            if (String.IsNullOrEmpty(menuName)) return;
+
+            if (Menus.ContainsKey(menuName))
+            {
+                DisableActiveMenu();
+
+                ActiveWidget = Menus[menuName];
+                ActiveWidget.EnableWidget();
+            }
+            else
+            {
+                Debug.LogError("Menu is not available in Dictionary");
+
+            }
         }
-    }
 
-    public void ReturnToRootMenu()
-    {
-        EnableMenu(RootMenu);
-    }
-
-    private void DisableAllMenus()
-    {
-        foreach (MenuWidget menu in Menus.Values)
+        public void DisableMenu(string menuName)
         {
-            menu.gameObject.SetActive(false);
+            if (String.IsNullOrEmpty(menuName)) return;
+            if (Menus.ContainsKey(menuName))
+            {
+                Menus[menuName].DisableWidget();
+            }
+            else
+            {
+                Debug.LogError("Menu is not availablein in Dictionary.");
+            }
         }
-    }
 
-    private void DisableActiveMenu()
-    {
-        if (ActiveMenu)
+        public void ReturnToRootMenu()
         {
-            ActiveMenu.gameObject.SetActive(false);
+            EnableMenu(RootMenu);
+        }
+
+        private void DisableActiveMenu()
+        {
+            if(ActiveWidget) ActiveWidget.DisableWidget();
+        }
+
+        private void DisableAllMenus()
+        {
+            foreach(MenuWidget menu in Menus.Values)
+            {
+                menu.DisableWidget();
+            }
         }
     }
 }
 
-public abstract class MenuWidget : MonoBehaviour
-{
-    [SerializeField] private string MenuName;
-    protected MenuController MenuController;
 
-    private void Awake()
-    {
-        MenuController = FindObjectOfType<MenuController>();
-        if (MenuController)
-        {
-            MenuController.AddMenu(MenuName, this);
-        }
-        else
-        {
-            Debug.LogError("Menu Controller not found!");
-        }
-    }
 
-    public void ReturnToRootMenu()
-    {
-        MenuController.ReturnToRootMenu();
-    }
-}
+
