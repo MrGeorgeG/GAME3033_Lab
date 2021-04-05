@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Systems.Health_System;
 using UnityEngine;
 using Weapons;
+using Systems.Health;
 
 public class PlayerEvents
 {
@@ -14,14 +14,13 @@ public class PlayerEvents
     {
         OnWeaponEquipped?.Invoke(weaponComponent);
     }
-    
-    public delegate void PlayerHealthSet(HealthComponent healthComponent);
 
-    public static event PlayerHealthSet OnPlayerHealthSet;
+    public delegate void OnHealthInitializedEvent(HealthComponent healthComponent);
 
-    public static void Invoke_OnPlayerHealthSet(HealthComponent healthComponent)
+    public static event OnHealthInitializedEvent OnHealthInitialized;
+
+    public static void Invoke_OnHealthInitialized(HealthComponent healthComponent)
     {
-        OnPlayerHealthSet?.Invoke(healthComponent);
+        OnHealthInitialized?.Invoke(healthComponent);
     }
-   
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,41 +17,52 @@ public class StateMachine : MonoBehaviour
     {
         if (States.ContainsKey(startingState))
         {
-            ChanceState(startingState);
+            ChangeState(startingState);
         }
-        else if(States.ContainsKey(ZombieStateType.Idle))
+        else if (States.ContainsKey(ZombieStateType.Idle))
         {
-            ChanceState(ZombieStateType.Idle);
+            ChangeState(ZombieStateType.Idle);
         }
     }
 
     public void AddState(ZombieStateType stateName, State state)
     {
-        if (States.ContainsKey(stateName)) return;
+        if (States.ContainsKey(stateName))
+        {
+            return;
+        }
+
         States.Add(stateName, state);
     }
 
     public void RemoveState(ZombieStateType stateName)
     {
-        if (!States.ContainsKey(stateName)) return;
+        if (!States.ContainsKey(stateName))
+        {
+            return;
+        }
+
         States.Remove(stateName);
     }
 
-    public void ChanceState(ZombieStateType nextState)
+    public void ChangeState(ZombieStateType nextState)
     {
         if (Running)
         {
             StopRunningState();
         }
 
-        if (!States.ContainsKey(nextState)) return;
+        if (!States.ContainsKey(nextState))
+        {
+            return;
+        }
 
         CurrentState = States[nextState];
         CurrentState.Start();
 
         if (CurrentState.UpdateInterval > 0)
         {
-            InvokeRepeating(nameof(IntervalUpdate),0.0f, CurrentState.UpdateInterval);
+            InvokeRepeating(nameof(IntervalUpdate), 0.0f, CurrentState.UpdateInterval);
         }
 
         Running = true;

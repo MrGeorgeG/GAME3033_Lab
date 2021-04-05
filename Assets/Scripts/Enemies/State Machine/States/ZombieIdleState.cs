@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class ZombieIdleState : ZombieStates
 {
-    private static readonly int MovementZ = Animator.StringToHash("MovementZ");
+    private static readonly int MovementZHash = Animator.StringToHash("MovementZ");
 
     public ZombieIdleState(ZombieComponent zombie, StateMachine stateMachine) : base(zombie, stateMachine)
     {
+
     }
 
     public override void Start()
@@ -15,6 +16,11 @@ public class ZombieIdleState : ZombieStates
         base.Start();
         OwnerZombie.ZombieNavMesh.isStopped = true;
         OwnerZombie.ZombieNavMesh.ResetPath();
-        OwnerZombie.ZombieAnimator.SetFloat(MovementZ, 0.0f);
+        OwnerZombie.ZombieAnimator.SetFloat(MovementZHash, 0.0f);
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
     }
 }

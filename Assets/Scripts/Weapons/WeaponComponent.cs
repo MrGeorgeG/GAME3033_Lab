@@ -38,9 +38,9 @@ namespace Weapons
   
         public WeaponStats WeaponInformation => WeaponStats;
   
-        [SerializeField] protected GameObject FiringAnimation;
         [SerializeField] protected WeaponStats WeaponStats;
 
+        [SerializeField] protected GameObject FiringAnimation;
 
         protected Camera MainCamera;
         protected WeaponHolder WeaponHolder;
@@ -55,10 +55,15 @@ namespace Weapons
             MainCamera = Camera.main;
         }
 
-        public void Initialize(WeaponHolder weaponHolder, CrossHairScript crossHair)
+        public void Initialize(WeaponHolder weaponHolder, WeaponScriptable weaponScriptable)
         {
             WeaponHolder = weaponHolder;
-            CrosshairComponent = crossHair;
+            CrosshairComponent = WeaponHolder.Crosshair;
+
+            if (weaponScriptable)
+            {
+                WeaponStats = weaponScriptable.WeaponStats;
+            }
         }
 
         public virtual void StartFiringWeapon()
@@ -77,7 +82,12 @@ namespace Weapons
         public virtual void StopFiringWeapon()
         {
             Firing = false;
-            if (FiringEffect) Destroy(FiringEffect.gameObject);
+
+            if (FiringEffect)
+            {
+                Destroy(FiringEffect.gameObject);
+            }
+
             CancelInvoke(nameof(FireWeapon));
         }
 
@@ -100,8 +110,11 @@ namespace Weapons
 
         protected virtual void ReloadWeapon()
         {
-            if (FiringEffect) Destroy(FiringEffect.gameObject);
-            
+            if (FiringEffect)
+            {
+                Destroy(FiringEffect.gameObject);
+            }
+
             int bulletsToReload = WeaponStats.ClipSize - WeaponStats.BulletsAvailable;
             if (bulletsToReload < 0)
             {

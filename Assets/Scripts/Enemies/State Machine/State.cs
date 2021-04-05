@@ -10,26 +10,26 @@
 
     public virtual void Start()
     {
-        
+
     }
-    
+
     public virtual void IntervalUpdate()
     {
-        
+
     }
-    
+
     public virtual void Update()
     {
-        
+
     }
-    
+
     public virtual void FixedUpdate()
     {
-        
+
     }
-    
+
     public virtual void Exit()
     {
-        
+
     }
 }
